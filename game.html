@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Tic-Tac-Toe</title>
+<link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Google Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars during animation */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            border-radius: 16px;
+            /*background: rgba(255, 255, 255, 0.8);  Removed solid background*/
+            /*box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);  More pronounced shadow */
+        }
+
+        h1 {
+            color: #4285f4;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 2.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        #gameboard {
+            display: grid;
+            grid-template-columns: repeat(3, 120px); /* Increased cell size */
+            grid-template-rows: repeat(3, 120px);
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: transparent; /* Make gameboard background transparent */
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Refined shadow */
+            margin-bottom: 1.5rem;
+            max-width: 95vw;
+            width: fit-content;
+            position: relative; /* Needed for absolute positioning of grid lines */
+        }
+
+        /* Refined Grid lines */
+        #gameboard::before,
+        #gameboard::after {
+            content: '';
+            position: absolute;
+            /* More subtle, gradient-based grid lines */
+            background: linear-gradient(to bottom, rgba(66, 133, 244, 0), rgba(66, 133, 244, 0.2), rgba(66, 133, 244, 0));
+            pointer-events: none; /* Ensure lines don't interfere with clicks */
+        }
+
+        #gameboard::before {
+            left: calc(33.33% - 1px);
+            top: 0;
+            width: 2px; /* Thinner lines */
+            height: 100%;
+        }
+
+        #gameboard::after {
+            left: calc(66.66% - 1px);
+            top: 0;
+            width: 2px; /* Thinner lines */
+            height: 100%;
+        }
+
+        /* Horizontal lines */
+        #gameboard::before,
+        #gameboard::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(to right, rgba(66, 133, 244, 0), rgba(66, 133, 244, 0.2), rgba(66, 133, 244, 0));
+            pointer-events: none;
+        }
+
+        #gameboard::before {
+            top: calc(33.33% - 1px);
+            left: 0;
+            height: 2px;
+            width: 100%;
+        }
+
+        #gameboard::after {
+            top: calc(66.66% - 1px);
+            left: 0;
+            height: 2px;
+            width: 100%;
+        }
+
+
+        .cell {
+            width: 120px; /* Increased cell size */
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4em; /* Increased font size */
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform */
+            user-select: none;
+            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Subtle cell shadow */
+        }
+
+        .cell:hover {
+            background-color: rgba(240, 244, 195, 0.9); /* Slightly more opaque hover */
+            transform: scale(1.04); /* Slight scale on hover */
+        }
+
+        .x {
+            color: #4285f4; /* Google Blue */
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 700; /* Use bold for X */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .o {
+            color: #db4437; /* Google Red */
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 700;  /* Use bold for O */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        #reset-button {
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added box-shadow transition */
+            font-family: 'Google Sans', sans-serif;
+            margin-top: 2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        #reset-button:hover {
+            background-color: #3367d6;
+            transform: scale(1.06);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18); /* Increased shadow on hover */
+        }
+
+        #reset-button:active {
+            transform: scale(1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Smaller shadow on active */
+        }
+
+        #message-box {
+            margin-top: 1.5rem;
+            font-size: 1.3rem;
+            color: #222;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            text-align: center;
+            min-height: 1.6em; /* Reserve space to avoid layout shift */
+        }
+
+        /* Styles for the winning screen */
+        #winning-screen {
+            position: fixed; /* Overlay the entire screen */
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.85); /* Dark semi-transparent overlay */
+            color: white;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #winning-screen.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+
+        #winning-screen h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+            color: #ffdb58; /* A brighter yellow for the win text */
+        }
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+        }
+
+        #winning-screen p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        #winning-screen .reset-button {
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            background-color: #ff6f61; /* A brighter red for the button */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-family: 'Google Sans', sans-serif;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Stronger shadow */
+        }
+
+        #winning-screen .reset-button:hover {
+            background-color: #e53e3e; /* Darker shade on hover */
+            transform: scale(1.08);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        #winning-screen .reset-button:active {
+            transform: scale(1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+
+        /* Colorful background shapes */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%;
+            left: -15%;
+            width: 30%;
+            height: 30%;
+            background-color: #f4b400; /* Google Yellow */
+            border-radius: 45%;
+            opacity: 0.2;
+            filter: blur(10px);
+            z-index: -1;
+            animation: float1 6s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -15%;
+            right: -10%;
+            width: 25%;
+            height: 25%;
+            background-color: #3cba54; /* Google Green */
+            border-radius: 50%;
+            opacity: 0.2;
+            filter: blur(12px);
+            z-index: -1;
+            animation: float2 8s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(10px, -15px);
+            }
+        }
+
+        @keyframes float2 {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(-12px, 20px);
+            }
+        }
+
+        /* Winning animation */
+        .winning-cell {
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                background-color: rgba(255, 255, 255, 0.8);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            }
+            50% {
+                background-color: rgba(255, 255, 255, 0.95);
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            }
+            100% {
+                background-color: rgba(255, 255, 255, 0.8);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            }
+        }
+
+        @media (max-width: 480px) {
+            #gameboard {
+                grid-template-columns: repeat(3, 100px);
+                grid-template-rows: repeat(3, 100px);
+                padding: 0.8rem;
+                gap: 0.5rem;
+            }
+
+            .cell {
+                width: 100px;
+                height: 100px;
+                font-size: 3.5em;
+            }
+
+            #reset-button {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            #message-box {
+                font-size: 1.1rem;
+            }
+
+            body::before,
+            body::after {
+                display: none; /* Remove shapes on very small screens */
+            }
+             #winning-screen h2{
+                font-size: 2.5rem
+            }
+             #winning-screen p{
+                font-size: 1.2rem;
+            }
+             #winning-screen .reset-button{
+                font-size: 1rem;
+                padding: 0.8rem 2rem
+            }
+        }
+
+        @media (max-width: 320px) {
+            #gameboard {
+                grid-template-columns: repeat(3, 90px);
+                grid-template-rows: repeat(3, 90px);
+            }
+
+            .cell {
+                width: 90px;
+                height: 90px;
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tic-Tac-Toe</h1>
+        <div id="gameboard">
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+        <div id="message-box"></div>
+        <button id="reset-button">Restart Game</button>
+        <div id="winning-screen">
+            <h2>Congratulations!</h2>
+            <p>Player <span id="winning-player">X</span> wins!</p>
+            <button class="reset-button">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const cells = document.querySelectorAll('.cell');
+        const resetButton = document.getElementById('reset-button');
+        const messageBox = document.getElementById('message-box');
+        const winningScreen = document.getElementById('winning-screen');
+        const winningPlayerDisplay = document.getElementById('winning-player');
+        const winningScreenResetButton = winningScreen.querySelector('.reset-button');
+        //const winSound = new Audio('win.mp3');
+        //const moveSound = new Audio('move.mp3');
+        //const buttonSound = new Audio('button.mp3');
+
+        let currentPlayer = 'x';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+        let moveCount = 0;
+
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function handleCellClick(event) {
+            if (!gameActive) return;
+
+            const cell = event.target;
+            const cellIndex = Array.from(cells).indexOf(cell);
+
+            if (gameBoard[cellIndex] !== '') {
+                cell.classList.add('shake');
+                setTimeout(() => cell.classList.remove('shake'), 300);
+                return;
+            }
+
+           // moveSound.play();
+            gameBoard[cellIndex] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.classList.add(currentPlayer);
+            cell.classList.add('fade-in');
+            setTimeout(()=> {
+                cell.classList.remove('fade-in')
+            }, 300);
+
+            moveCount++;
+            currentPlayer = currentPlayer === 'x' ? 'o' : 'x';
+
+            const winner = checkWin();
+            if (winner) {
+                //winSound.play();
+                messageBox.textContent = '';
+                gameActive = false;
+                highlightWinningCells(winner.winningPattern);
+                showWinningScreen(winner.winner);
+            } else if (isBoardFull()) {
+                messageBox.textContent = "It's a tie!";
+                gameActive = false;
+                showWinningScreen('tie');
+            } else {
+                messageBox.textContent = `Player ${currentPlayer.toUpperCase()}'s turn`;
+            }
+        }
+
+        function checkWin() {
+            for (let pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    return {
+                        winner: gameBoard[a],
+                        winningPattern: pattern
+                    };
+                }
+            }
+            return null;
+        }
+
+        function isBoardFull() {
+            return moveCount === 9;
+        }
+
+        function highlightWinningCells(pattern) {
+            pattern.forEach(index => {
+                cells[index].classList.add('winning-cell');
+            });
+        }
+
+        function showWinningScreen(winner) {
+            winningScreen.classList.add('show');
+            if (winner === 'tie') {
+                winningPlayerDisplay.textContent = "It's a Tie!";
+            } else {
+                winningPlayerDisplay.textContent = winner.toUpperCase();
+            }
+        }
+
+        function resetGame() {
+            //buttonSound.play();
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            currentPlayer = 'x';
+            moveCount = 0;
+            messageBox.textContent = '';
+            winningScreen.classList.remove('show');
+
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x');
+                cell.classList.remove('o');
+                cell.classList.remove('winning-cell');
+                cell.classList.remove('shake');
+            });
+
+            messageBox.textContent = "Player X's turn";
+        }
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleCellClick);
+            cell.addEventListener('mouseenter', () => {
+                if (gameActive && cell.textContent === '') {
+                    cell.style.backgroundColor = 'rgba(240, 244, 195, 0.7)';
+                }
+            });
+            cell.addEventListener('mouseleave', () => {
+                cell.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            });
+        });
+
+        resetButton.addEventListener('click', resetGame);
+        winningScreenResetButton.addEventListener('click', resetGame);
+       /* resetButton.addEventListener('mouseenter', () => {
+            resetButton.style.transform = 'scale(1.08)';
+        });
+        resetButton.addEventListener('mouseleave', () => {
+            resetButton.style.transform = 'scale(1)';
+        });*/
+
+        // Initialize
+        messageBox.textContent = "Player X's turn";
+    </script>
+</body>
+</html>
+

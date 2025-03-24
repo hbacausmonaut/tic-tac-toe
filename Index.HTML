@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Google Sans', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='1' y1='0' y2='1' gradientTransform='translate(0 0.5)'%3E%3Cstop offset='0' stop-color='%23fbc02d'/%3E%3Cstop offset='1' stop-color='%23f9a8d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' x2='1' y1='0' y2='0'%3E%3Cstop offset='0' stop-color='%23a7f3d0'/%3E%3Cstop offset='1' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3ClinearGradient id='c' x1='0' x2='1' y1='1' y2='0'%3E%3Cstop offset='0' stop-color='%236ee7b7'/%3E%3Cstop offset='1' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3ClinearGradient id='d' x1='1' x2='0' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fca5a5'/%3E%3Cstop offset='1' stop-color='%23ef4444'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='%2360a5fa' fill-opacity='0.2'%3E%3Cpath d='M53.1 143.9c-17.7 15.4-42.2 6.4-50-10.6-7.7-17-2.2-41.5 13.2-51.6 15.4-10.1 39.8-3.1 52.8 14.6 13 17.7 3.8 42.1-12.3 50-16 7.9-40.5 2.4-50.6-15.3zM196.6 92.4c10.3-19.4 35.8-27.3 55.2-17 19.4 10.3 27.3 35.8 17 55.2-10.3 19.4-35.8 27.3-55.2 17-19.4-10.3-27.3-35.8-17-55.2zM115.1 324.9c-19.1-14.4-47.5-12.2-64 5.3-16.4 17.5-14.2 45.9 5 65 19.1 19.1 47.5 16.8 64-5.3 16.5-22.1 14.3-50.5-5-64.9zM344.3 297.5c24.4-7.8 43.4-30.6 43.4-57.3 0-40.2-32.7-72.8-73-72.8-14.8 0-28 4.3-38.5 11.5-2.2 1.5-4.3 3.1-6.4 4.6-15.3 10.7-15.3 28.5 0 39.2 7.7 5.4 17.3 8.3 27.2 8.3 11.5 0 22.4-4.8 30.7-12.6 8.3-7.8 12.8-18.6 12.8-30.5 0-26.7-21.8-48.5-48.5-48.5-16.3 0-30.8 8-39.7 20.3-9 12.3-12.1 28.7-8.8 44.2 9.7 46.4 52.6 77.8 98.3 68.3z'/%3E%3Ccircle cx='155' cy='118' r='24' fill='url(%23a)'/%3E%3Ccircle cx='261' cy='283' r='32' fill='url(%23b)'/%3E%3Cpath d='M200 350c-30 0-55-25-55-55s25-55 55-55 55 25 55 55-25 55-55 55z' fill='url(%23c)'/%3E%3Crect x='300' y='50' width='60' height='60' rx='10' fill='url(%23d)'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: cover;
+            display: flex; /* Added for centering items in body */
+            flex-direction: column;  /* Added for centering items in body */
+            align-items: center; /* Added for centering items in body */
+
+        }
+
+        .container {
+            width: 90%; /* Increased width */
+            max-width: 600px; /* Increased max-width */
+            padding: 2rem;
+            text-align: center;
+            background-color: transparent;
+            border-radius: 1rem;
+            box-shadow: none;
+        }
+
+        h1 {
+            font-size: 4.5rem; /* Increased font size */
+            margin-bottom: 2.5rem; /* Increased margin */
+            color: #212121; /* Darker text */
+            font-weight: 700;  /* Use 700 for the boldest weight */
+            letter-spacing: -0.02em;
+            text-shadow: 2px 3px 5px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+            transition: transform 0.2s ease;
+        }
+
+        h1:hover {
+           transform: scale(1.04);
+        }
+
+        h1 span:nth-child(1) { color: #4285f4; } /* Blue */
+        h1 span:nth-child(2) { color: #ea4335; } /* Red */
+        h1 span:nth-child(3) { color: #fbbc05; } /* Yellow */
+        h1 span:nth-child(4) { color: #34a853; } /* Green */
+        h1 span:nth-child(5) { color: #4285f4; } /* Blue */
+        h1 span:nth-child(6) { color: #ea4335; } /* Red */
+        h1 span:nth-child(7) { color: #fbbc05; } /* Yellow */
+        h1 span:nth-child(8) { color: #34a853; } /* Green */
+
+        #play-button {
+            padding: 1.5rem 3rem; /* Increased padding */
+            font-size: 1.85rem; /* Increased font size */
+            background-color: #4285f4;
+            color: #ffffff;
+            border: none;
+            border-radius: 1rem; /* More rounded corners */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added box-shadow */
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 500; /* Use 500 for medium weight */
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+            letter-spacing: 0.02em;
+        }
+
+        #play-button:hover {
+            background-color: #3367d6;
+            transform: scale(1.05); /* Slight scale on hover */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25); /* Increased shadow on hover */
+        }
+
+        #play-button:active {
+            transform: scale(1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Smaller shadow on active */
+        }
+
+        #play-button::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;  /* Increased size of ripple */
+            height: 6px; /* Increased size of ripple */
+            background: rgba(255, 255, 255, 0.7); /* Lighter ripple */
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1);
+            transition: width 0.8s ease, height 0.8s ease, opacity 0.8s ease, transform 0.5s ease; /* Longer transition */
+        }
+
+        #play-button:active::after {
+            width: 150px; /* Increased ripple size */
+            height: 150px; /* Increased ripple size */
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(2); /* Stronger scale */
+        }
+
+        #loading-animation {
+            margin-top: 3rem; /* Increased margin */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dot {
+            width: 20px; /* Increased dot size */
+            height: 20px; /* Increased dot size */
+            border-radius: 50%;
+            background-color: #4285f4;
+            margin: 0 12px; /* Increased margin */
+            animation: google-loading 1.4s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) {
+            background-color: #ea4335;
+            animation-delay: -0.3s;
+        }
+
+        .dot:nth-child(3) {
+            background-color: #fbbc05;
+            animation-delay: -0.6s;
+        }
+
+        .dot:nth-child(4) {
+            background-color: #34a853;
+            animation-delay: -0.9s;
+        }
+
+        @keyframes google-loading {
+            0%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-25px); /* Increased bounce */
+            }
+        }
+
+        #settings-button {
+            position: absolute;
+            top: 1.5rem; /* Increased top margin */
+            right: 1.5rem; /* Increased right margin */
+            padding: 0.75rem; /* Increased padding */
+            cursor: pointer;
+            border: none;
+            border-radius: 50%;
+            background-color: transparent;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform */
+        }
+
+        #settings-button:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(1.1); /* Slight scale on hover*/
+        }
+         #settings-button:active {
+             transform: scale(0.9);
+         }
+
+        #settings-icon {
+            width: 2.5rem; /* Increased icon size */
+            height: 2.5rem; /* Increased icon size */
+            color: #777; /* Slightly darker color */
+            transition: color 0.3s ease;
+        }
+        #settings-icon:hover{
+            color: #555;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container">
+        <h1 class="text-4xl font-bold mb-8 text-gray-900">
+            <span>T</span><span>i</span><span>c</span><span>-</span><span>T</span><span>a</span><span>c</span><span>-</span><span>T</span><span>o</span><span>e</span>
+        </h1>
+        <button id="play-button">Play</button>
+        <div id="loading-animation" style="display: none;">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <button id="settings-button">
+            <svg id="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><path d="M12 20s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1z"></path><circle cx="12" cy="5" r="3"></circle><path d="M12 8v4"></path><path d="M12 17v-4"></path><path d="M5.6 6.6l1.4 1.4"></path><path d="M16.4 17.4l1.4 1.4"></path><path d="M5.6 17.4l1.4-1.4"></path><path d="M16.4 6.6l1.4-1.4"></path><path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path></svg>
+        </button>
+    </div>
+
+    <script>
+        const playButton = document.getElementById('play-button');
+        const loadingAnimation = document.getElementById('loading-animation');
+        const settingsButton = document.getElementById('settings-button');
+
+        playButton.addEventListener('click', () => {
+            playButton.disabled = true;
+            loadingAnimation.style.display = 'flex';
+            playButton.classList.add('active');
+
+            // Simulate loading and redirect after 2 seconds
+            setTimeout(() => {
+                // Remove the loading animation and redirect to the game page
+                loadingAnimation.style.display = 'none';
+                // Use a relative path. IMPORTANT:  Check if this path is correct for your file structure.
+                // If game.html is in the same folder, this will likely work:
+                window.location.href = './game.html';
+                // OR, use the full URL of your game.html file.  This will *always* work, but is less flexible:
+                // window.location.href = 'https://your-website.com/game.html'; // <--- REPLACE THIS WITH YOUR ACTUAL URL
+            }, 2000);
+        });
+
+        settingsButton.addEventListener('click', () => {
+            alert('Settings Menu (Coming Soon!)');
+        });
+    </script>
+</body>
+</html>
